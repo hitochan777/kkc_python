@@ -17,24 +17,26 @@ def KKCInput():
     return LATINU + NUMBER + HIRAGANA + OTHERS
 
 def kkConv(sent):
+    sent = sent.strip()
     POSI = len(sent)                      # 解析位置 posi の最大値
     VTable = [[] for i in range(0,POSI+1)] # Viterbi Table
     VTable[0].append((None, BT, 0));               # DP左端
-
+    # print(totalFreq)
     for posi in range(1,POSI+1):
         for start in range(0,posi):
             kkci = sent[start:posi]
             for pair in d[kkci]:
                 if pairFreq[pair] == 0:
                     continue
+                # sys.stderr.write("%s%s(%d)\n" % (" "*start, pair, pairFreq[pair]))
                 best = (None,None,0)
                 for node in VTable[start]:
                     logP = node[2] - math.log(pairFreq[pair]/totalFreq)
                     if best[1] == None or logP < best[2]:
                         best = (node,pair,logP)
+                        # sys.stderr.write("%s -> %s (%5.2f)\n" % (node[1], pair, logP));
                 if best[1] != None:
                     VTable[posi].append(best)
-                print(best)
             if posi - start <= UTMAXLEN:
                 best = (None,None,0)
                 for node in VTable[start]:
@@ -42,11 +44,11 @@ def kkConv(sent):
                     if best[1] == None or logP < best[2]:
                         pair = "/".join([kkci,UT])
                         best =(node,pair,logP)
+                        # sys.stderr.write("%s -> %s (%5.2f)\n" % (node[1], pair, logP))
                 if best[1] != None:              # 最良のノードがある場合
                     VTable[posi].append(best); # best をコピーして参照を記憶
-                print(best)
     best = (None,None,0)
-    for node in VTable[posi-1]:             # BT への遷移
+    for node in VTable[POSI]:             # BT への遷移
         logP = node[2]-math.log(pairFreq[BT]/totalFreq)
         if best[1] == None or logP < best[2]:
             best = (node, BT, logP)
@@ -83,7 +85,7 @@ try:
         for line in train:
             for e in line.strip().split(" "):
                 pairFreq[e] += 1
-                pairFreq[BT] += 1
+            pairFreq[BT] += 1
         sys.stderr.write("counting frequency done\n")
 except IOError:
     exit("Cannot open file " + args.trainingFile)
@@ -93,14 +95,14 @@ except IOError:
 #-------------------------------------------------------------------------------------
 
 totalFreq = 0
-pairFreq[UT] = 0
+UTcount = 0
 for key in pairFreq:
     freq = pairFreq[key]
     totalFreq += freq
     if freq == 1:
-        pairFreq[UT] += 1
+        UTcount += 1
         pairFreq[key] = 0
-
+pairFreq[UT] = UTcount
 #-------------------------------------------------------------------------------------
 #                        仮名漢字変換辞書 d の作成
 #-------------------------------------------------------------------------------------
@@ -118,6 +120,6 @@ for key in pairFreq:
 
 for line in sys.stdin:
     result = kkConv(line)
-    print(result)
+    # print(result)
     out = [s.split("/")[0] for s in result]
     print("".join(out))
