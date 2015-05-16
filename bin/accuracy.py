@@ -13,7 +13,7 @@ def getMatchNum(str1,str2):
     for pos1 in range(1,len1+1):
         for pos2 in range(1,len2+1):
             if str1[pos1-1] == str2[pos2-1]:
-                dp[pos1][pos2] = dp[pos2-1][pos2-1]+1
+                dp[pos1][pos2] = dp[pos1-1][pos2-1]+1
             else:
                 dp[pos1][pos2] = max(dp[pos1-1][pos2],dp[pos1][pos2-1])
 
@@ -32,14 +32,15 @@ try:
         nmm = 0
         num = 0 # the smaller of the number of lines of two files
         while True:
-            line1 = train.readline()
-            line2 = test.readline()
+            line1 = train.readline().strip()
+            line2 = test.readline().strip()
             if line1=="" or line2=="":
                 break
             num += 1
             len1 = len(line1)
             len2 = len(line2)
             match = getMatchNum(line1,line2)
+            print(match)
             nm1 += len1
             nm2 += len2
             nmm += match

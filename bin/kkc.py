@@ -11,8 +11,8 @@ def KKCInput():
     HIRAGANA = "ぁ あ ぃ い ぅ う ぇ え ぉ お か が き ぎ く ぐ け げ こ ご さ ざ し じ す ず せ ぜ そ ぞ た だ ち ぢ っ つ づ て で と ど な に ぬ ね の は ば ぱ ひ び ぴ ふ ぶ ぷ へ べ ぺ ほ ぼ ぽ ま み む め も ゃ や ゅ ゆ ょ よ ら り る れ ろ ゎ わ ゐ ゑ を ん".split(" ")
     OTHERS =  \
     "ヴ ヵ ヶ".split(" ") +  \
-    "ー ＝ ¥ ｀ 「 」 ； ’ 、 。".split(" ") + \
-    " ！ ＠ ＃ ＄ ％ ＾ ＆ ＊ （ ） ＿ ＋ ｜ 〜 ｛ ｝ ： ” ＜ ＞ ？".split(" ") +  \
+    "ー ＝ ￥ ｀ 「 」 ； ’ 、 。".split(" ") + \
+    "！ ＠ ＃ ＄ ％ ＾ ＆ ＊ （ ） ＿ ＋ ｜ 〜 ｛ ｝ ： ” ＜ ＞ ？".split(" ") +  \
     "・".split(" ")
     return LATINU + NUMBER + HIRAGANA + OTHERS
 
@@ -34,6 +34,7 @@ def kkConv(sent):
                         best = (node,pair,logP)
                 if best[1] != None:
                     VTable[posi].append(best)
+                print(best)
             if posi - start <= UTMAXLEN:
                 best = (None,None,0)
                 for node in VTable[start]:
@@ -43,6 +44,7 @@ def kkConv(sent):
                         best =(node,pair,logP)
                 if best[1] != None:              # 最良のノードがある場合
                     VTable[posi].append(best); # best をコピーして参照を記憶
+                print(best)
     best = (None,None,0)
     for node in VTable[posi-1]:             # BT への遷移
         logP = node[2]-math.log(pairFreq[BT]/totalFreq)
@@ -116,5 +118,6 @@ for key in pairFreq:
 
 for line in sys.stdin:
     result = kkConv(line)
+    print(result)
     out = [s.split("/")[0] for s in result]
     print("".join(out))
