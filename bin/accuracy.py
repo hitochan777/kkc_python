@@ -10,7 +10,7 @@
 #
 # Usage : accuracy.py (Converted file) (gold standard file)
 #
-# Example : accuracy.perl T.conv T.sent
+# Example : bin/accuracy.py T.conv T.sent
 #
 # Note : One sentence must correspond to one line.
 
