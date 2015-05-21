@@ -1,11 +1,27 @@
 #!/usr/bin/env python3
 
+#=====================================================================================
+#                       accuracy.py
+#                             Otsuki Hitoshi
+#                             Last change 21 May 2015
+#=====================================================================================
+
+# Function : Calculate the accuracy of the conversion of kana to kanji charactes.
+#
+# Usage : accuracy.py (Converted file) (gold standard file)
+#
+# Example : accuracy.perl T.conv T.sent
+#
+# Note : One sentence must correspond to one line.
+
 import math
 import sys
 from collections import defaultdict
 import argparse
 
 def getMatchNum(str1,str2):
+    """ return the number of matched characters between str1 and str2
+    """
     len1 = len(str1)
     len2 = len(str2)
     dp = [[0]*(len2+1) for i in range(len1+1)]
@@ -26,10 +42,10 @@ args = parser.parse_args()
 
 try:
     with open(args.converted,"r") as train, open(args.test) as test:
-        suc = 0
-        nm1 = 0
-        nm2 = 0
-        nmm = 0
+        suc = 0 # the number of matched sentences
+        nm1 = 0 # the number of characters in "train" file
+        nm2 = 0 # the number of characters in "test" file 
+        nmm = 0 # the number of matched characters
         num = 0 # the smaller of the number of lines of two files
         while True:
             line1 = train.readline().strip()
@@ -40,15 +56,16 @@ try:
             len1 = len(line1)
             len2 = len(line2)
             match = getMatchNum(line1,line2)
-            print(match)
             nm1 += len1
             nm2 += len2
             nmm += match
             if len1==match and len2==match:
                 suc += 1
             else:
+                print(match)
                 print(line1)
                 print(line2)
+    print()
     print("Intersection/%s = %d/%d = %5.2f%%" % (args.converted, nmm,nm1, 100*nmm/nm1))
     print("Intersection/%s = %d/%d = %5.2f%%" % (args.test,      nmm,nm2, 100*nmm/nm2))
     print("Sentence Accuracy = %d/%d = %5.2f%%\n" % (suc,num,100*suc/num))
